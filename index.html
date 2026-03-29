@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>EDUP3143 | Sosiologi Dalam Pendidikan — Penghasilan Produk</title>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Barlow', sans-serif; overflow-x: hidden; background: #000; }
+        .video-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; }
+        .video-bg video { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .overlay-gradient { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.25); z-index: -1; pointer-events: none; }
+
+        /* Floating navigation */
+        .floating-nav {
+            position: fixed;
+            top: 24px;
+            left: 24px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border-radius: 32px;
+            padding: 0.6rem 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            display: inline-block;
+        }
+        .agency-logo {
+            font-family: 'Barlow', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1f2937;
+            white-space: nowrap;
+        }
+        .agency-logo span { font-weight: 700; color: #c2410c; }
+
+        .menu-toggle {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 1001;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+        .menu-line { width: 22px; height: 2px; background: #222; border-radius: 2px; transition: all 0.2s; }
+        .menu-line.short { width: 16px; }
+        .menu-toggle.open .menu-line:first-child { transform: rotate(45deg) translate(5px, 5px); }
+        .menu-toggle.open .menu-line:last-child { transform: rotate(-45deg) translate(4px, -6px); width: 22px; }
+        .menu-toggle.open .menu-line.short { opacity: 0; transform: scaleX(0); }
+
+        .menu-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 999;
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px);
+            display: none; align-items: center; justify-content: center;
+        }
+        .pill-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; list-style: none; padding: 2rem; max-width: 800px; margin: 0 auto; }
+        .pill-link {
+            display: inline-block; background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+            border-radius: 100px; padding: 0.9rem 2rem; font-weight: 600; font-size: 1.1rem;
+            color: #1f2937; text-decoration: none; transition: all 0.2s; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.2);
+            text-align: center; min-width: 140px; transform: rotate(var(--item-rot, 0deg));
+        }
+        .pill-link:hover { background: var(--hover-bg, #3b82f6); color: var(--hover-color, white); transform: rotate(var(--item-rot, 0deg)) scale(1.02); }
+        @media (max-width: 900px) { .pill-link { transform: rotate(0deg) !important; } .pill-list { gap: 1rem; } .pill-link { min-width: 120px; padding: 0.7rem 1.5rem; } .agency-logo { font-size: 0.9rem; } }
+
+        /* Hero section */
+        .hero-container {
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 0 1rem;
+        }
+        .hero-title-first {
+            font-family: 'Barlow', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            font-size: 5rem;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            white-space: nowrap;
+        }
+        .hero-title-second {
+            font-family: 'Instrument Serif', serif;
+            font-style: italic;
+            font-weight: 500;
+            font-size: 8rem;
+            color: white;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+            line-height: 1.1;
+        }
+        .hero-subtext {
+            font-family: 'Barlow', sans-serif;
+            font-weight: 500;
+            font-size: 1rem;
+            color: rgba(255,255,255,0.9);
+            max-width: 32rem;
+            margin: 1rem auto 0;
+            white-space: nowrap;
+        }
+        .hero-btn {
+            background: white;
+            color: #1f2937;
+            font-weight: 600;
+            padding: 0.8rem 2rem;
+            border-radius: 100px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 12px 24px -8px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 2rem;
+            border: none;
+            cursor: pointer;
+        }
+        .hero-btn:hover { transform: scale(1.02); box-shadow: 0 20px 28px -10px rgba(0,0,0,0.25); }
+        @media (max-width: 1200px) { .hero-title-first { font-size: 4rem; } .hero-title-second { font-size: 6rem; } }
+        @media (max-width: 900px) { .hero-title-first { font-size: 3rem; } .hero-title-second { font-size: 4.5rem; } .hero-subtext { font-size: 0.9rem; } }
+        @media (max-width: 640px) { .hero-title-first { font-size: 2.2rem; } .hero-title-second { font-size: 3rem; } .hero-subtext { font-size: 0.75rem; } }
+
+        /* Profile Card styling (larger) */
+        .pc-card-wrapper {
+            position: relative;
+            width: 420px;  /* increased from 360px */
+            flex-shrink: 0;
+            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            transform-origin: left center;
+        }
+        .expanded .pc-card-wrapper {
+            transform: translateX(-20px);
+        }
+        .pc-card-shell {
+            position: relative;
+            width: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.1s linear;
+        }
+        .pc-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .pc-inside {
+            position: relative;
+            padding: 2rem 1.8rem;
+            background: linear-gradient(145deg, #60496e8c 0%, #71C4FF44 100%);
+            border-radius: 2rem;
+        }
+        .pc-shine, .pc-glare {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .pc-shine { background: radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255,255,245,0.4) 0%, rgba(255,255,255,0) 80%); }
+        .pc-glare { background: radial-gradient(circle at var(--pointer-x, 50%) var(--pointer-y, 50%), rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%); mix-blend-mode: overlay; }
+        .avatar {
+            width: 100px;   /* larger */
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(255,255,240,0.8);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .pc-user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex: 1;
+        }
+        .pc-user-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .pc-handle {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #2c241a;
+        }
+        .pc-status {
+            font-size: 0.8rem;
+            color: #10b981;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .pc-status::before { content: "●"; font-size: 0.6rem; }
+        .pc-contact-btn {
+            background: #222;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .pc-contact-btn:hover { background: #000; }
+        .pc-details h3 {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.9rem;
+            font-weight: 600;
+            color: #2c241a;
+            margin-top: 1rem;
+        }
+        .pc-details p {
+            font-size: 1rem;
+            color: #6b5a48;
+        }
+        @media (max-width: 640px) {
+            .pc-card-wrapper { width: 320px; }
+            .avatar { width: 80px; height: 80px; }
+            .pc-details h3 { font-size: 1.5rem; }
+        }
+
+        /* Info Panel (right side) */
+        .info-panel {
+            flex: 1;
+            max-width: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(16px);
+            border-radius: 2rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            margin-left: 0;
+        }
+        .info-panel.active {
+            max-width: 580px;
+            opacity: 1;
+            padding: 1.8rem;
+            margin-left: 2rem;
+        }
+        .biodata-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 0.8rem 1rem;
+        }
+        .biodata-label {
+            font-weight: 700;
+            color: #4a3a2a;
+            font-size: 0.95rem;
+        }
+        .biodata-value {
+            color: #2c241a;
+            font-size: 0.95rem;
+        }
+        .panel-header {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 1.2rem;
+            color: #2c241a;
+            border-left: 4px solid #c9a87b;
+            padding-left: 0.75rem;
+        }
+
+        /* Card container layout */
+        .biodata-flex-container {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        /* PDF Section */
+        .pdf-section {
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            padding: 1.5rem;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
+        }
+        .pdf-label {
+            font-family: 'Instrument Serif', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #2c241a;
+        }
+        .pdf-embed {
+            width: 100%;
+            height: 550px;
+            border-radius: 1.25rem;
+            border: none;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+        @media (max-width: 768px) {
+            .pdf-embed { height: 400px; }
+            .biodata-flex-container { flex-direction: column; align-items: center; }
+            .expanded .pc-card-wrapper { transform: translateX(0); }
+            .info-panel.active { max-width: 100%; margin-left: 0; margin-top: 1.5rem; }
+        }
+
+        /* Other reused */
+        .glass-card { background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(12px); border-radius: 2rem; }
+        .hanging-indent { padding-left: 2em; text-indent: -2em; margin-bottom: 0.75rem; line-height: 1.45; }
+        .figure-img { cursor: pointer; transition: 0.2s; border-radius: 1rem; }
+        .figure-img:hover { transform: scale(1.01); }
+        .page { transition: opacity 0.2s ease; }
+        .footer-premium { background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(10px); color: #e0e0e0; }
+        .nav-arrow { transition: transform 0.2s, opacity 0.2s; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(4px); }
+        .nav-arrow:hover:not(.disabled) { transform: scale(1.1); }
+        .disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+        .section-title { border-left: 5px solid #c9a87b; padding-left: 1rem; font-family: 'Instrument Serif', serif; font-weight: 600; }
+        .subheading-premium { font-family: 'Instrument Serif', serif; font-size: 1.8rem; font-weight: 500; margin-top: 1rem; margin-bottom: 0.5rem; }
+        .inner-sub { font-family: 'Instrument Serif', serif; font-size: 1.4rem; font-weight: 500; color: #3a2c1f; }
+        /* Carta title styles (small, not bold) */
+        .carta-title {
+            font-weight: normal;
+            font-size: 0.9rem;
+            color: #5a4a38;
+            margin-top: 0.5rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="video-bg">
+        <video autoplay muted loop playsinline>
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260228_065522_522e2295-ba22-457e-8fdb-fbcd68109c73.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="overlay-gradient"></div>
+
+    <div class="floating-nav">
+        <div class="agency-logo">EDUP3143 | <span>Sosiologi Dalam Pendidikan</span></div>
+    </div>
+    <div class="menu-toggle" id="menuToggle">
+        <span class="menu-line"></span>
+        <span class="menu-line short"></span>
+    </div>
+    <div id="menuOverlay" class="menu-overlay"><ul class="pill-list" id="pillList"></ul></div>
+
+    <div id="pagesContainer">
+        <div class="page" data-page="0" id="homePage">
+            <div class="hero-container">
+                <div class="max-w-5xl mx-auto space-y-4">
+                    <div class="space-y-2">
+                        <div class="hero-title-first">Sosiologi Dalam Pendidikan</div>
+                        <div class="hero-title-second">EDUP3143</div>
+                    </div>
+                    <p class="hero-subtext">Tugasan 2 - PENGHASILAN PRODUK</p>
+                    <button id="heroBiodataBtn" class="hero-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="text-amber-700"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                        Biodata
+                    </button>
+                </div>
+            </div>
+
+            <div id="biodataSection" class="max-w-6xl mx-auto px-4 pb-20 mt-8 scroll-mt-24">
+                <div id="biodataFlex" class="biodata-flex-container">
+                    <div class="pc-card-wrapper" id="profileCardWrapper">
+                        <div class="pc-card-shell" id="pcCardShell">
+                            <div class="pc-card">
+                                <div class="pc-inside" id="pcInside">
+                                    <div class="pc-shine"></div>
+                                    <div class="pc-glare"></div>
+                                    <div class="flex items-center gap-4">
+                                        <img class="avatar" src="foto_penulis.png" alt="Avatar" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' viewBox=\'0 0 100 100\'%3E%3Ccircle fill=\'%23d9d2c5\' cx=\'50\' cy=\'50\' r=\'50\'/%3E%3Ctext x=\'50\' y=\'67\' font-size=\'40\' text-anchor=\'middle\' fill=\'%23907e66\' dy=\'.3em\'%3E📷%3C/text%3E%3C/svg%3E';">
+                                        <div class="pc-user-info">
+                                            <div class="pc-user-text">
+                                                <div class="pc-handle">@ching.hy</div>
+                                                <div class="pc-status">Online</div>
+                                            </div>
+                                            <button class="pc-contact-btn" id="contactBtn">Contact</button>
+                                        </div>
+                                    </div>
+                                    <div class="pc-details">
+                                        <h3>CHING.H.Y</h3>
+                                        <p>Biodata Pelajar</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="infoPanel" class="info-panel">
+                        <div class="panel-header">Maklumat Pelajar</div>
+                        <div class="biodata-grid">
+                            <div class="biodata-label">Nama</div>
+                            <div class="biodata-value">: CHING HAO YANG</div>
+                            <div class="biodata-label">Angka Giliran</div>
+                            <div class="biodata-value">: 2024032440023</div>
+                            <div class="biodata-label">No. K.P.</div>
+                            <div class="biodata-value">: 051223-14-0431</div>
+                            <div class="biodata-label">Kumpulan</div>
+                            <div class="biodata-value">: PISMP SJHK AMBILAN OGOS 2024/ JULAI 2028</div>
+                            <div class="biodata-label">Kod Kursus</div>
+                            <div class="biodata-value">: EDUP3143</div>
+                            <div class="biodata-label">Nama Kursus</div>
+                            <div class="biodata-value">: Sosiologi dalam Pendidikan</div>
+                            <div class="biodata-label">Nama Pensyarah</div>
+                            <div class="biodata-value">: PUAN ELLENOR EMPAI ANAK GILBERT ANTAS</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="pdf-section">
+                    <div class="pdf-label"><span>📄</span> Cover Assignment (PDF)</div>
+                    <iframe class="pdf-embed" src="./cover_assignment.pdf" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 1: PENGENALAN - no image region -->
+        <div class="page hidden" data-page="1"><div class="glass-card max-w-5xl mx-auto p-6 md:p-10 my-12"><h2 class="section-title text-3xl md:text-4xl">Pengenalan</h2><div class="mt-5 space-y-5 text-stone-800 leading-relaxed text-justify"><h3 class="subheading-premium">1.0 Pengenalan</h3><p>Stratifikasi sosial merupakan satu fenomena yang merujuk kepada perbezaan kedudukan atau kelas sosial dalam masyarakat yang sering menjadi cabaran besar dalam dunia pendidikan. Secara umumnya, jurang sosioekonomi antara murid sering dilihat sebagai faktor utama yang membezakan tahap pencapaian akademik mereka di sekolah. Pelan Pembangunan Pendidikan Malaysia (PPPM) 2013-2025 telah menentukan bahawa salah satu aspirasi utama negara adalah merapatkan jurang pencapaian antara murid bandar dan luar bandar serta murid daripada pelbagai latar belakang sosioekonomi. Walau bagaimanapun, kesan negatif stratifikasi sosial ini sebenarnya boleh dikurangkan melalui pembentukan budaya sekolah yang positif. Budaya sekolah yang harmoni dan berkesan bukan sahaja mampu merapatkan jurang pendidikan, malah menjadi pemangkin kepada kecemerlangan murid. Dalam hal ini, guru memegang peranan yang sangat penting sebagai pembina sosial atau agen pengubah yang membentuk persekitaran pembelajaran yang adil dan menyokong pencapaian akademik yang cemerlang bagi setiap murid.</p></div></div></div>
+
+<!-- PAGE 2: CIRI SEKOLAH BERKESAN - images with small non-bold titles below -->
+        <div class="page hidden" data-page="2"><div class="glass-card max-w-5xl mx-auto p-6 md:p-10 my-12"><h2 class="section-title text-3xl md:text-4xl">Infografik</h2><div class="mt-5 space-y-5 text-stone-800 text-justify"><h3 class="subheading-premium">2.0 Ciri-Ciri Sekolah Berkesan</h3>
+            <div class="bg-amber-50/70 rounded-xl p-4 my-4 text-center">
+                <img class="figure-img mx-auto rounded-lg mt-2 cursor-pointer" src="infografik.png" alt="chart1" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'450\' height=\'240\' viewBox=\'0 0 450 240\'%3E%3Crect width=\'450\' height=\'240\' fill=\'%23e3dacb\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%237b5e3e\' font-size=\'14\'%3E%3C/text%3E%3C/svg%3E';"></div></div></div>
+	</div>
+
+        <!-- PAGE 3: PERANAN BUDAYA SEKOLAH - no image region -->
+        <div class="page hidden" data-page="3"><div class="glass-card max-w-5xl mx-auto p-6 md:p-10 my-12"><h2 class="section-title text-3xl md:text-4xl">Peranan Budaya Sekolah</h2><div class="mt-5 space-y-5 text-stone-800 text-justify"><h3 class="subheading-premium">3.0 Peranan Budaya Sekolah Positif Dalam Meminimumkan Kesan Stratifikasi Sosial</h3><h4 class="inner-sub mt-4">3.1 Budaya Inklusif</h4><p>Budaya sekolah yang positif berupaya meminimumkan kesan negatif stratifikasi sosial menerusi amalan inklusiviti dalam perkongsian sumber pendidikan. Hal ini sangat penting kerana sekolah bertindak sebagai agen penyeimbang yang merapatkan jurang antara murid kaya dengan murid miskin (Sharifah Md Nor, 2000). Dalam konteks ini, pihak sekolah perlu membudayakan persekitaran yang memastikan setiap murid mendapat akses kepada infrastruktur digital dan bahan rujukan yang berkualiti tanpa mengira latar belakang sosioekonomi keluarga mereka. Inisiatif ini sangat selari dengan aspirasi dalam Rancangan Pendidikan Malaysia 2026-2035 yang menyasarkan pengurangan sebanyak 70% dalam jurang pencapaian sosioekonomi (KPM, 2026). Melalui pemantapan infrastruktur fizikal dan digital di bawah Teras Strategik 4, sekolah boleh menyediakan kemudahan peranti dan pusat sumber yang lengkap untuk kegunaan murid daripada golongan kurang berkemampuan secara percuma. Keberhasilan sistem pendidikan yang memberikan peluang setara ini membolehkan murid yang kekurangan sumber di rumah tetap dapat bersaing secara adil di sekolah (Chong et al., 2019). Dengan cara ini, kekangan kewangan tidak lagi menjadi penghalang utama kepada pencapaian akademik murid.</p><h4 class="inner-sub mt-4">3.2 Budaya Harapan Tinggi</h4><p>Selain sokongan sumber, penerapan budaya harapan tinggi dalam kalangan warga pendidik merupakan kunci utama untuk menangani kesan psikologi akibat perbezaan status sosial. Sekolah yang mempunyai budaya positif akan sentiasa memupuk kepercayaan bahawa setiap murid mempunyai potensi besar untuk berjaya. Pendekatan ini secara saintifiknya dikenali sebagai kesan Pygmalion yang membuktikan bahawa jangkaan positif guru akan memacu peningkatan prestasi murid secara nyata (Rosenthal & Jacobson, 1968). Dalam kerangka pembangunan modal insan, usaha ini sangat bertepatan dengan matlamat untuk melahirkan murid yang mempunyai ciri berkeyakinan dan berdaya tahan (KPM, 2026). Guru yang meletakkan harapan tinggi tanpa berat sebelah terhadap murid daripada strata sosial rendah akan membantu mereka membina kepercayaan diri yang utuh (Bourdieu & Passeron, 1977). Apabila murid merasa dihargai dan dipercayai, mereka akan berusaha lebih gigih untuk mencapai keputusan cemerlang sekali gus menghapuskan perasaan rendah diri yang sering membelenggu murid daripada keluarga miskin. Kesimpulannya, gabungan antara kesaksamaan sumber dan sokongan emosi yang kuat melalui budaya sekolah mampu mengurangkan impak negatif stratifikasi sosial secara menyeluruh. </p></div></div></div>
+
+        <!-- PAGE 4: AGEN PENGUBAH - no image region -->
+        <div class="page hidden" data-page="4"><div class="glass-card max-w-5xl mx-auto p-6 md:p-10 my-12"><h2 class="section-title text-3xl md:text-4xl">Agen Pengubah</h2><div class="mt-5 space-y-5 text-stone-800 text-justify"><h3 class="subheading-premium">4.0 Peranan Guru Sebagai Agen Pengubah</h3><h4 class="inner-sub">4.1 Guru Sebagai Pembina Hubungan Positif dan Kepercayaan</h4><p>Guru memainkan peranan yang amat penting sebagai pembina hubungan positif dan kepercayaan terhadap murid. Peranan ini bukan sekadar bersifat sokongan, malah terbukti menjadi faktor penentu kepada kejayaan akademik murid, terutamanya mereka yang datang daripada latar belakang sosioekonomi rendah. Hal ini demikian kerana murid daripada keluarga miskin sering kali berasa rendah diri dan kurang yakin untuk melibatkan diri secara aktif dalam proses pembelajaran. Justeru, guru perlu mengambil inisiatif untuk mendekati murid, mendengar keluh kesah mereka dan menunjukkan keprihatinan yang tulus. Apabila hubungan yang positif berjaya dibina, murid akan berasa selamat, dihargai dan seterusnya lebih terbuka untuk menerima ilmu yang disampaikan.</p>
+
+    <p>Kepentingan peranan ini turut disokong oleh bukti empirikal yang kukuh. Menurut meta-analisis yang dilakukan oleh Hattie (2012), hubungan guru dan murid mempunyai kesan yang sangat besar terhadap pencapaian akademik dengan nilai kesan d=0.72. Nilai ini jauh melebihi purata kesan kebanyakan intervensi pendidikan yang lain. Dalam konteks yang sama, kajian klasik oleh Rosenthal dan Jacobson (1968) tentang kesan Pygmalion membuktikan bahawa apabila guru meletakkan harapan tinggi dan menunjukkan kepercayaan kepada murid, prestasi murid akan meningkat secara nyata. Tanpa hubungan yang positif, murid daripada keluarga kurang berkemampuan cenderung berasa terpinggir dan kehilangan motivasi untuk belajar. </p><h4 class="inner-sub">4.2 Guru Sebagai Pelaksana Pedagogi Adil dan Inklusif</h4><p>Selain itu, guru juga bertindak sebagai pelaksana pedagogi yang adil dan inklusif bagi memastikan setiap murid mendapat peluang yang sama tanpa mengira latar belakang sosioekonomi. Peranan ini amat penting kerana bilik darjah merupakan ruang utama di mana budaya sekolah diterjemahkan kepada pengalaman pembelajaran yang sebenar. Guru perlu mengamalkan pengajaran berdiferensiasi seperti yang ditekankan oleh Tomlinson (2014) yang menyatakan bahawa tanpa pendekatan ini, murid daripada pelbagai latar belakang tidak akan dapat mengakses kurikulum secara bermakna. Oleh itu, guru perlu mengelakkan berat sebelah tersembunyi yang sering menyebabkan murid miskin kurang mendapat perhatian dan peluang untuk menyumbang di dalam kelas.</p>
+
+    <p>Kepentingan peranan ini turut dibuktikan oleh data antarabangsa daripada PISA 2022 yang dikeluarkan oleh OECD (2023). Data tersebut menunjukkan bahawa di sekolah yang mempunyai guru dengan harapan tinggi terhadap semua murid, murid daripada keluarga berpendapatan rendah mencapai skor matematik yang lebih tinggi sebanyak 30 hingga 40 mata berbanding murid miskin di sekolah yang kurang mempunyai sokongan tersebut. Dalam konteks Malaysia, Rancangan Pendidikan Malaysia 2026-2035 turut mengiktiraf bahawa pembangunan profesional guru dalam pedagogi yang berpaksikan keadilan adalah salah satu teras strategik untuk mengurangkan jurang pencapaian berdasarkan sosioekonomi. Tanpa guru yang melaksanakan pedagogi adil dan inklusif, budaya sekolah yang positif tidak akan sampai ke bilik darjah dan gagal memberi impak yang bermakna kepada murid yang memerlukan.</p><h4 class="inner-sub">4.3 Guru Sebagai Pemimpin dan Pembentuk Norma Sekolah</h4><p>Selain daripada bilik darjah, guru juga bertindak sebagai pemimpin dan pembentuk norma sekolah secara menyeluruh. Peranan ini melangkaui pengajaran kerana guru menjadi teladan yang menunjukkan nilai-nilai positif seperti disiplin, tanggungjawab dan keprihatinan melalui tingkah laku seharian. Guru juga terlibat secara aktif dalam aktiviti kurikulum dan kokurikulum serta bekerjasama dengan pentadbir, ibu bapa dan komuniti untuk membentuk persekitaran sekolah yang kondusif. Tanpa penglibatan guru dalam aspek kepimpinan ini, budaya sekolah yang positif tidak akan dapat diterjemahkan secara konsisten di semua peringkat.</p>
+
+    <p>Kepentingan peranan ini disokong oleh tokoh pendidikan antarabangsa, Fullan (2014), yang menegaskan bahawa guru dan pemimpin sekolah merupakan agen perubahan yang paling utama dalam sistem pendidikan. Menurut Fullan (2014), transformasi sekolah hanya berjaya apabila guru memainkan peranan aktif sebagai pemimpin yang membentuk norma dan nilai institusi. Dalam konteks Malaysia, laporan Sinar bestari (2024, Oktober 10) mengenai amalan di SMK Kota Masai, Johor, menunjukkan bahawa guru diiktiraf sebagai agen perubahan yang menerajui budaya cemerlang sekolah melalui komitmen mereka dalam membimbing sahsiah dan akademik murid. Selain itu, Rancangan Pendidikan Malaysia 2026-2035 turut menekankan bahawa pemerkasaan guru sebagai pemimpin sekolah adalah strategi utama untuk mencapai kecemerlangan sistem pendidikan. Justeru, tanpa guru sebagai pemimpin dan pembentuk norma, budaya sekolah yang positif tidak akan terbentuk secara menyeluruh dan berterusan.</p></div></div></div>
+
+<!-- PAGE 5: CADANGAN INTERVENSI - no image region -->
+        <div class="page hidden" data-page="3"><div class="glass-card max-w-5xl mx-auto p-6 md:p-10 my-12"><h2 class="section-title text-3xl md:text-4xl">Cadangan Intervensi</h2><div class="mt-5 space-y-5 text-stone-800 text-justify"><h3 class="subheading-premium">5.0 Cadangan Intervensi Dan Langkah Penambahbaikan Strategik</h4><p>Bagi memantapkan peranan guru serta budaya sekolah secara holistik, beberapa cadangan intervensi yang praktikal dan berfokus perlu dilaksanakan segera. Langkah pertama melibatkan pewujudan Dana Ekuiti Pendidikan di peringkat sekolah untuk membekalkan sumber pembelajaran secara percuma kepada murid yang kurang berkemampuan. Intervensi ini sangat bertepatan dengan matlamat Pelan Pembangunan Pendidikan Malaysia 2013 hingga 2025 yang memberikan penekanan khusus terhadap usaha merapatkan jurang sosioekonomi dalam pendidikan. Melalui mekanisme penyediaan peranti digital dan bahan rujukan, masalah keciciran akibat kemiskinan dapat diatasi secara proaktif. Perkara ini terbukti relevan kerana kajian oleh Chong et al. (2019) menegaskan bahawa ketersediaan infrastruktur fizikal yang lengkap di persekitaran murid merupakan prasyarat utama untuk meningkatkan pencapaian akademik golongan yang berpendapatan rendah.</p>
+
+<p>Seterusnya, pihak pengurusan sekolah hendaklah merangka Program Pembudayaan Akademik bagi menangani isu ketidaksamaan modal budaya secara akar umbi. Berdasarkan pandangan kritis melalui Teori Modal Budaya oleh Bourdieu dan Passeron (1977), murid daripada latar belakang keluarga miskin sering ketinggalan kerana tidak didedahkan kepada gaya pemikiran masyarakat terpelajar sejak awal. Oleh itu, intervensi ini menuntut warga pendidik untuk mengendalikan sesi pementoran khas yang mendedahkan murid rentan kepada wacana intelek serta kemahiran komunikasi aras tinggi. Melalui pendedahan persekitaran baharu ini, murid secara beransur-ansur akan menyerap nilai budaya sekolah yang dominan lalu membina keyakinan diri yang utuh. Langkah strategik ini secara langsung berjaya merombak tembok stratifikasi sosial yang selama ini mengekang keupayaan sebenar mereka.</p>
+
+<p>Akhir sekali, pemerkasaan kompetensi pedagogi guru mesti dijadikan agenda utama yang melangkaui corak latihan konvensional sedia ada. Pihak pentadbir perlu mempergiatkan kursus pembangunan profesional yang memfokuskan kemahiran intervensi sosioemosi dan pengajaran berbeza. Langkah penambahbaikan proaktif ini amat selari dengan teras utama Rancangan Pendidikan Malaysia 2026 hingga 2035 yang bermatlamat teguh untuk membina ekosistem pendidikan yang berdaya tahan terhadap cabaran masa hadapan. Apabila guru sentiasa dilengkapi dengan kemahiran psikologi yang mantap, mereka pasti mampu menguruskan bilik darjah secara saksama tanpa meminggirkan mana-mana darjat sosial. Kesimpulannya, kesepaduan pelaksanaan intervensi material dan pemantapan kualiti pengajaran ini akan menjamin kelestarian kecemerlangan akademik bagi setiap murid. </p></div></div></div>
+
+
+        <!-- PAGE 6: KESIMPULAN + RUJUKAN (with full links) -->
+        <div class="page hidden" data-page="5"><div class="glass-card max-w-5xl mx-auto p-6 md:p-10 my-12"><h2 class="section-title text-3xl md:text-4xl">Kesimpulan</h2><div class="mt-5 space-y-5 text-stone-800 text-justify"><h3 class="subheading-premium">6.0 Kesimpulan</h3><p>Secara keseluruhannya, stratifikasi sosial memang menimbulkan cabaran besar terhadap pencapaian akademik murid. Walau bagaimanapun, budaya sekolah yang positif mampu meminimumkan kesan negatif tersebut melalui amalan inklusif dan harapan tinggi terhadap semua murid. Dalam usaha membentuk budaya ini, guru memainkan peranan yang amat penting sebagai agen pengubah. Guru bukan sahaja membina hubungan positif dan kepercayaan, malah melaksanakan pedagogi yang adil serta menjadi pemimpin yang membentuk norma sekolah. Dengan sokongan daripada dasar pendidikan seperti Rancangan Pendidikan Malaysia 2026–2035, peranan guru perlu terus diperkukuhkan bagi memastikan setiap murid, tanpa mengira latar belakang sosioekonomi, berpeluang untuk mencapai kecemerlangan akademik.</p></div><div class="mt-10 rounded-2xl p-6" style="background: rgba(0,0,0,0.8); backdrop-filter: blur(6px); color: #f0ede8;"><h3 class="text-2xl serif-italic text-white mb-4 border-l-4 border-amber-400 pl-3">Rujukan</h3><div class="space-y-2 text-sm"><div class="hanging-indent">Bourdieu, P., & Passeron, J. C. (1977). <em>Reproduction in education, society and culture</em>. Sage Publications. <br><a href="https://archive.org/details/reproductionined0000bour/" class="text-amber-300 underline break-all" target="_blank">https://archive.org/details/reproductionined0000bour/</a></p></div><div class="hanging-indent">Chong, C.K., Muhammad Faizal A. Ghani, Zuraidah Abdullah. (2019). Cabaran amalan komuniti pembelajaran dalam kalangan guru sekolah. <em>JuKu: Jurnal Kurikulum &amp; Pengajaran Asia Pasifik, 7</em>(3), 35--48.<br><a href="https://juku.um.edu.my/article/view/19294" class="text-amber-300 underline break-all" target="_blank">https://juku.um.edu.my/article/view/19294</a></p></div><div class="hanging-indent">Fullan, M. (2014). <em>The principal: Three keys to maximizing impact</em>. Jossey-Bass. <br><a href="https://archive.org/details/principalthreeke0000full" class="text-amber-300 underline break-all" target="_blank">https://archive.org/details/principalthreeke0000full</a></p></div><div class="hanging-indent">Hattie, J. (2012). <em>Visible learning for teachers: Maximizing impact on learning</em>. Routledge. <br><a href="https://archive.org/details/visiblelearningf0000hatt" class="text-amber-300 underline break-all" target="_blank">https://archive.org/details/visiblelearningf0000hatt</a></p></div><div class="hanging-indent">Kementerian Pendidikan Malaysia. (2013). <em>Pelan pembangunan pendidikan Malaysia 2013--2025</em>. Bahagian Pembangunan Kurikulum.</div><div class="hanging-indent">Kementerian Pendidikan Malaysia. (2026). <em>Rancangan pendidikan Malaysia 2026--2035</em>. Kementerian Pendidikan Malaysia.</div><div class="hanging-indent">OECD. (2023). PISA 2022 results: <em>The state of learning and equity in education</em> (Vol. 1). OECD Publishing. <br><a href="https://doi.org/10.1787/53f23881-en" class="text-amber-300 underline break-all" target="_blank">https://doi.org/10.1787/53f23881-en</a></p></div><div class="hanging-indent">Rosenthal, R., & Jacobson, L. (1968). <em>Pygmalion in the classroom: Teacher expectation and pupils' intellectual development</em>. Holt, Rinehart and Winston. <br><a href="https://gwern.net/doc/statistics/bias/1968-rosenthal-pygmalionintheclassroom.pdf" class="text-amber-300 underline break-all" target="_blank">https://gwern.net/doc/statistics/bias/1968-rosenthal-pygmalionintheclassroom.pdf</a></p></div><div class="hanging-indent">Sharifah Md Nor. (2000). <em>Keberkesanan sekolah: Satu perspektif sosiologi</em>. Universiti Putra Malaysia. <br><a href="http://psasir.upm.edu.my/id/eprint/40372/" class="text-amber-300 underline break-all" target="_blank">http://psasir.upm.edu.my/id/eprint/40372/</a></p></div><div class="hanging-indent">Sinar bestari. (2024, Oktober 10). <em>Pendidik fokus terajui budaya cemerlang pelajar di sekolah.</em> Sinar Bestari. <br><a href="https://sinarbestari.sinarharian.com.my/sekolah-menengah/pendidik-fokus-terajui-budaya-cemerlang-pelajar-di-sekolah" class="text-amber-300 underline break-all" target="_blank">https://sinarbestari.sinarharian.com.my/sekolah-menengah/pendidik-fokus-terajui-budaya-cemerlang-pelajar-di-sekolah</a></p></div><div class="hanging-indent">Tomlinson, C. A. (2014). <em>The differentiated classroom: Responding to the needs of all learners</em> (2nd ed.). ASCD. <br><a href="https://www.perlego.com/book/3292625/the-differentiated-classroom-responding-to-the-needs-of-all-learners-pdf" class="text-amber-300 underline break-all" target="_blank">https://www.perlego.com/book/3292625/the-differentiated-classroom-responding-to-the-needs-of-all-learners-pdf</a></p></div></div></div></div></div>
+
+<!-- PAGE 7: KESAN STRATIFIKASI SOSIAL - images with small non-bold titles below -->
+        <div class="page hidden" data-page="2"><div class="glass-card max-w-5xl mx-auto p-6 md:p-10 my-12"><h2 class="section-title text-3xl md:text-4xl">Maklumat Tambahan</h2><div class="mt-5 space-y-5 text-stone-800 text-justify"><h3 class="subheading-premium">Kesan Stratifikasi Sosial Terhadap Pencapaian Akademik Murid</h3><p>Pertama sekali, stratifikasi sosial yang berasaskan status sosioekonomi keluarga merupakan faktor utama yang mewujudkan jurang pencapaian akademik murid di sekolah. Murid daripada keluarga berpendapatan rendah sering berhadapan dengan masalah kekurangan sumber pendidikan seperti buku rujukan dan peranti digital. Menurut kajian oleh Chong et al. (2019), masalah kewangan ibu bapa berkait rapat dengan tahap pencapaian murid kerana mereka tidak mampu menyediakan persekitaran pembelajaran yang selesa di rumah. Keadaan ini menyebabkan murid tersebut terpinggir dalam arus pembelajaran berbanding rakan mereka yang lebih berkemampuan.</p><p>Selain faktor kewangan, stratifikasi sosial juga menyebabkan murid kehilangan kelebihan dari segi modal budaya. Merujuk kepada Teori Modal Budaya oleh Bourdieu & Passeron (1977), murid daripada kelas sosial atasan lebih mudah cemerlang kerana mereka telah didedahkan kepada cara pemikiran dan gaya bahasa yang sesuai dengan budaya sekolah sejak kecil. Sebaliknya, murid miskin sering berasa rendah diri dan kurang yakin kerana latar belakang kehidupan mereka berbeza daripada norma kebiasaan di sekolah.</p>
+            <div class="bg-amber-50/70 rounded-xl p-4 my-4 text-center">
+                <img class="figure-img mx-auto rounded-lg mt-2 cursor-pointer" src="carta_1.png" alt="chart1" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'450\' height=\'240\' viewBox=\'0 0 450 240\'%3E%3Crect width=\'450\' height=\'240\' fill=\'%23e3dacb\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%237b5e3e\' font-size=\'14\'%3E%3C/text%3E%3C/svg%3E';">
+                <div class="carta-title">Carta 1: Analisis Jurang Pencapaian & Impak Latar Belakang</div>
+                <p class="text-xs text-stone-500 mt-1"></p>
+            </div>
+            <p>Kesan negatif ini dapat dibuktikan dengan jelas melalui data rasmi kerajaan. Laporan Pelan Pembangunan Pendidikan Malaysia 2013-2025 merekodkan jurang pencapaian sebanyak 4% pada tahap Ujian Pencapaian Sekolah Rendah dan terus melebar kepada 8% pada tahap Sijil Pelajaran Malaysia antara sekolah bandar dengan luar bandar. Lebih membimbangkan lagi, laporan tersebut mendedahkan bahawa hanya 7% daripada sekolah cemerlang yang mempunyai majoriti murid miskin. Sebaliknya, sebanyak 52% sekolah berpencapaian rendah kebanyakan terdiri daripada golongan miskin. Bukti terperinci ini menunjukkan bahawa latar belakang keluarga sangat mempengaruhi kedudukan sesebuah sekolah.</p>
+            <div class="bg-amber-50/70 rounded-xl p-4 my-4 text-center">
+                <img class="figure-img mx-auto rounded-lg cursor-pointer" src="carta_2.png" alt="chart2" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'450\' height=\'220\' viewBox=\'0 0 450 220\'%3E%3Crect width=\'450\' height=\'220\' fill=\'%23e7dfcf\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23745731\' font-size=\'13\'%3E%3C/text%3E%3C/svg%3E';">
+                <div class="carta-title">Carta 2: Perbandingan Data antara PPPM 2013-2025 dengan RPM 2026-2035</div>
+                <p class="text-xs text-stone-500 mt-1"></p>
+            </div>
+            <p>Jika dinilai dan dibandingkan dengan laporan terbaharu, iaitu Rancangan Pendidikan Malaysia (RPM) 2026-2035, kerajaan sebenarnya telah menunjukkan usaha yang baik. Usaha ini terbukti apabila jurang pencapaian berdasarkan sosioekonomi bagi Sijil Pelajaran Malaysia pada tahun 2024 berjaya dikurangkan sebanyak 57.75%. Walau bagaimanapun, laporan terkini tersebut turut mengesahkan bahawa status sosioekonomi masih kekal sebagai penentu utama prestasi murid. Sebagai contoh terperinci, pentaksiran antarabangsa pada tahun 2022 menunjukkan skor purata Matematik bagi murid daripada keluarga berpendapatan tinggi adalah sebanyak 458 markah. Angka ini sangat jauh berbeza berbanding murid miskin yang hanya mampu memperoleh 375 markah.</p></div></div></div>
+    </div>
+
+    <div class="fixed left-4 top-1/2 transform -translate-y-1/2 z-50"><button id="prevBtn" class="nav-arrow p-3 rounded-full shadow-xl disabled:opacity-40"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg></button></div>
+    <div class="fixed right-4 top-1/2 transform -translate-y-1/2 z-50"><button id="nextBtn" class="nav-arrow p-3 rounded-full shadow-xl disabled:opacity-40"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg></button></div>
+    <footer id="globalFooter" class="fixed bottom-0 left-0 w-full footer-premium py-3 text-center text-sm z-40 hidden">© 2026 CHING HAO YANG — EDUP3143 Sosiologi Dalam Pendidikan. Hak Cipta Terpelihara.</footer>
+
+    <div id="imageModal" class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-[100] hidden"><div class="relative"><img id="modalImage" class="max-w-[90vw] max-h-[85vh] object-contain rounded-2xl"><button id="closeModalBtn2" class="absolute top-2 right-2 text-white bg-black/60 rounded-full p-2 text-2xl">&times;</button></div></div>
+
+    <script>
+        // ========== BUBBLE MENU ==========
+        const menuItemsData = [
+            { label: 'Home', pageId: 0, action: 'goto', rotation: -8, hoverBg: '#3b82f6', hoverColor: '#fff' },
+            { label: 'Biodata', pageId: 0, action: 'scrollBiodata', rotation: 8, hoverBg: '#10b981', hoverColor: '#fff' },
+            { label: 'Pengenalan', pageId: 1, action: 'goto', rotation: 6, hoverBg: '#f59e0b', hoverColor: '#fff' },
+            { label: 'Infografik', pageId: 2, action: 'goto', rotation: -5, hoverBg: '#ef4444', hoverColor: '#fff' },
+            { label: 'Budaya Sekolah', pageId: 3, action: 'goto', rotation: 7, hoverBg: '#8b5cf6', hoverColor: '#fff' },
+            { label: 'Agen Pengubah', pageId: 4, action: 'goto', rotation: -6, hoverBg: '#ec489a', hoverColor: '#fff' },
+	    { label: 'Cadangan Intervensi', pageId: 5, action: 'goto', rotation: -5, hoverBg: '#ef4444', hoverColor: '#fff' },
+            { label: 'Kesimpulan', pageId: 6, action: 'goto', rotation: 4, hoverBg: '#14b8a6', hoverColor: '#fff' },
+	    { label: 'Maklumat Tambahan', pageId: 7, action: 'goto', rotation: -8, hoverBg: '#3b82f6', hoverColor: '#fff' }
+        ];
+        const pillList = document.getElementById('pillList');
+        const overlayMenu = document.getElementById('menuOverlay');
+        const menuToggle = document.getElementById('menuToggle');
+        let isMenuOpen = false;
+        let bubblesRef = [], labelRefs = [];
+        menuItemsData.forEach((item, idx) => {
+            const li = document.createElement('li'); li.className = 'pill-col';
+            const a = document.createElement('a'); a.className = 'pill-link'; a.setAttribute('data-idx', idx);
+            a.style.setProperty('--item-rot', `${item.rotation}deg`); a.style.setProperty('--hover-bg', item.hoverBg); a.style.setProperty('--hover-color', item.hoverColor);
+            const span = document.createElement('span'); span.className = 'pill-label'; span.textContent = item.label;
+            a.appendChild(span); li.appendChild(a); pillList.appendChild(li);
+            bubblesRef.push(a); labelRefs.push(span);
+        });
+        function openMenu() { overlayMenu.style.display = 'flex'; gsap.set(bubblesRef, { scale: 0 }); gsap.set(labelRefs, { y: 24, autoAlpha: 0 }); bubblesRef.forEach((b, i) => { gsap.to(b, { scale: 1, duration: 0.5, ease: 'back.out(1.2)', delay: i * 0.08 }); gsap.to(labelRefs[i], { y: 0, autoAlpha: 1, duration: 0.4, delay: i * 0.08 + 0.05 }); }); isMenuOpen = true; menuToggle.classList.add('open'); }
+        function closeMenu() { gsap.to(labelRefs, { y: 24, autoAlpha: 0, duration: 0.2 }); gsap.to(bubblesRef, { scale: 0, duration: 0.25, onComplete: () => { overlayMenu.style.display = 'none'; isMenuOpen = false; menuToggle.classList.remove('open'); } }); }
+        menuToggle.addEventListener('click', () => { isMenuOpen ? closeMenu() : openMenu(); });
+        overlayMenu.addEventListener('click', (e) => { if (e.target === overlayMenu) closeMenu(); });
+
+        // ========== PAGE MANAGEMENT ==========
+        const pages = Array.from(document.querySelectorAll('.page'));
+        let currentIdx = 0;
+        const prevBtn = document.getElementById('prevBtn'), nextBtn = document.getElementById('nextBtn'), footer = document.getElementById('globalFooter');
+        function updateUI() { pages.forEach((p, i) => p.classList.toggle('hidden', i !== currentIdx)); prevBtn.classList.toggle('disabled', currentIdx === 0); nextBtn.classList.toggle('disabled', currentIdx === pages.length-1); footer.classList.toggle('hidden', currentIdx === 0); if (currentIdx !== 0) window.scrollTo({ top: 0, behavior: 'smooth' }); else window.scrollTo({ top: 0, behavior: 'smooth' }); }
+        function goPrev() { if(currentIdx > 0) { currentIdx--; updateUI(); } }
+        function goNext() { if(currentIdx < pages.length-1) { currentIdx++; updateUI(); } }
+        prevBtn.addEventListener('click', goPrev); nextBtn.addEventListener('click', goNext);
+        window.addEventListener('keydown', e => { if(e.key === 'ArrowLeft') goPrev(); if(e.key === 'ArrowRight') goNext(); });
+        function handleMenuItemClick(item) { closeMenu(); if(item.action === 'scrollBiodata') { if(currentIdx !== 0) { currentIdx = 0; updateUI(); setTimeout(() => document.getElementById('biodataSection')?.scrollIntoView({ behavior: 'smooth' }), 150); } else document.getElementById('biodataSection')?.scrollIntoView({ behavior: 'smooth' }); } else if(item.action === 'goto') { if(currentIdx !== item.pageId) { currentIdx = item.pageId; updateUI(); } else if(item.pageId === 0) window.scrollTo({ top: 0, behavior: 'smooth' }); } }
+        bubblesRef.forEach((b, idx) => { b.addEventListener('click', (e) => { e.preventDefault(); handleMenuItemClick(menuItemsData[idx]); }); });
+        document.getElementById('heroBiodataBtn')?.addEventListener('click', () => { if(currentIdx !== 0) { currentIdx = 0; updateUI(); setTimeout(() => document.getElementById('biodataSection')?.scrollIntoView({ behavior: 'smooth' }), 150); } else document.getElementById('biodataSection')?.scrollIntoView({ behavior: 'smooth' }); });
+
+        // ========== CARD CLICK: EXPAND / COLLAPSE ==========
+        const flexContainer = document.getElementById('biodataFlex');
+        const infoPanel = document.getElementById('infoPanel');
+        let isExpanded = false;
+        function expandCard() { if (isExpanded) return; isExpanded = true; flexContainer.classList.add('expanded'); infoPanel.classList.add('active'); }
+        function collapseCard() { if (!isExpanded) return; isExpanded = false; flexContainer.classList.remove('expanded'); infoPanel.classList.remove('active'); }
+        const profileCard = document.getElementById('profileCardWrapper');
+        profileCard.addEventListener('click', (e) => { if (e.target.closest('.pc-contact-btn')) return; if (!isExpanded) expandCard(); else collapseCard(); });
+
+        // ========== TILT EFFECT ==========
+        const cardShell = document.getElementById('pcCardShell');
+        const shine = document.querySelector('.pc-shine');
+        const glare = document.querySelector('.pc-glare');
+        let rafId = null, running = false, lastTs = 0;
+        let currentX = 0, currentY = 0, targetX = 0, targetY = 0, initialUntil = 0;
+        const DEFAULT_TAU = 0.14, INITIAL_TAU = 0.6;
+        function setVarsFromXY(x, y) {
+            if (!cardShell) return;
+            const width = cardShell.clientWidth || 1;
+            const height = cardShell.clientHeight || 1;
+            const percentX = Math.min(Math.max((100 / width) * x, 0), 100);
+            const percentY = Math.min(Math.max((100 / height) * y, 0), 100);
+            const centerX = percentX - 50, centerY = percentY - 50;
+            const rotateX = -(centerY / 5), rotateY = (centerX / 4);
+            cardShell.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+            if (shine) { shine.style.setProperty('--pointer-x', `${percentX}%`); shine.style.setProperty('--pointer-y', `${percentY}%`); }
+            if (glare) { glare.style.setProperty('--pointer-x', `${percentX}%`); glare.style.setProperty('--pointer-y', `${percentY}%`); }
+        }
+        function step(ts) {
+            if (!running) return;
+            if (lastTs === 0) lastTs = ts;
+            const dt = (ts - lastTs) / 1000;
+            lastTs = ts;
+            const tau = ts < initialUntil ? INITIAL_TAU : DEFAULT_TAU;
+            const k = 1 - Math.exp(-dt / tau);
+            currentX += (targetX - currentX) * k;
+            currentY += (targetY - currentY) * k;
+            setVarsFromXY(currentX, currentY);
+            const stillFar = Math.abs(targetX - currentX) > 0.05 || Math.abs(targetY - currentY) > 0.05;
+            if (stillFar || document.hasFocus()) { rafId = requestAnimationFrame(step); } 
+            else { running = false; lastTs = 0; if (rafId) cancelAnimationFrame(rafId); rafId = null; }
+        }
+        function startAnimation() { if (running) return; running = true; lastTs = 0; rafId = requestAnimationFrame(step); }
+        function setTarget(x, y) { targetX = x; targetY = y; startAnimation(); }
+        function toCenter() { if (cardShell) setTarget(cardShell.clientWidth / 2, cardShell.clientHeight / 2); }
+        if (cardShell) {
+            cardShell.addEventListener('pointerenter', (e) => { const rect = cardShell.getBoundingClientRect(); setTarget(e.clientX - rect.left, e.clientY - rect.top); });
+            cardShell.addEventListener('pointermove', (e) => { const rect = cardShell.getBoundingClientRect(); setTarget(e.clientX - rect.left, e.clientY - rect.top); });
+            cardShell.addEventListener('pointerleave', () => toCenter());
+            setTarget(cardShell.clientWidth / 2, cardShell.clientHeight / 2);
+        }
+
+        document.getElementById('contactBtn')?.addEventListener('click', (e) => { e.stopPropagation(); alert("Hubungi CHING HAO YANG untuk sebarang pertanyaan akademik."); });
+        const imgModal = document.getElementById('imageModal'), modalImg = document.getElementById('modalImage'), closeModalImg = document.getElementById('closeModalBtn2');
+        document.querySelectorAll('.figure-img').forEach(img => img.addEventListener('click', () => { modalImg.src = img.src; imgModal.classList.remove('hidden'); }));
+        closeModalImg.addEventListener('click', () => imgModal.classList.add('hidden')); 
+        imgModal.addEventListener('click', (e) => { if(e.target === imgModal) imgModal.classList.add('hidden'); });
+        updateUI();
+    </script>
+</body>
+</html>
